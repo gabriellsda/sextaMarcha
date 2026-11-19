@@ -104,6 +104,7 @@
 }
 .sm-new-actions {
   display: flex;
+  align-items: center;
   gap: 12px;
   flex-wrap: wrap;
   margin-top: 30px;
@@ -114,20 +115,23 @@
   align-items: center;
   justify-content: center;
   gap: 24px;
-  padding: 16px 24px;
   border-radius: 9px;
   font-weight: 750;
-  font-size: 14px;
-  min-height: 52px;
 }
 .sm-new-primary {
   background: #ff3b0a;
   color: #fff;
+  padding: 18px 36px;
+  font-size: 18px;
+  min-height: 60px;
 }
 .sm-new-secondary {
   border: 1px solid #c4c4c4;
   color: #151515;
   background: #fff;
+  padding: 16px 24px;
+  font-size: 14px;
+  min-height: 52px;
 }
 .sm-new-primary:hover {
   background: #db3005;
@@ -1064,11 +1068,22 @@
   .sm-v4-portal-copy h2 {
     font-size: 40px;
   }
+  .sm-v4-hero .sm-new-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
   .sm-v4-hero .sm-new-actions a {
-    flex: 1;
-    padding: 13px 10px;
+    width: 100%;
+    flex: none;
+    padding: 14px 20px;
     gap: 8px;
-    font-size: 12px;
+    font-size: 16px;
+    min-height: 56px;
+  }
+  .sm-v4-hero .sm-new-actions .sm-new-primary {
+    font-size: 18px;
+    min-height: 60px;
+    padding: 16px 28px;
   }
 }
 
