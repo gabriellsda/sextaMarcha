@@ -46,26 +46,18 @@
         <div class="separator"></div>
         <div class="section-kicker">03 / PAGAMENTO</div>
         <p>
-          Esta página demonstra o fluxo futuro do ICETRAN. Nenhuma cobrança
-          real ou matrícula será efetuada.
+          O clique nesta página não confirma o pagamento. O pedido só fica
+          pago quando o webhook autenticado receber charge.paid.
         </p>
         @if (order.paymentStatus === "paid") {
         <div class="success">
-          ✓ Pagamento de teste confirmado. O despachante já pode acompanhar
-          a venda simulada no portal.
+          Pagamento confirmado pelo webhook. O despachante pode acompanhar a
+          venda no portal.
         </div>
         } @else {
-        <button type="button" class="pay" [disabled]="processing()" (click)="pay()">
-          {{
-          processing()
-          ? "Processando
-          teste..."
-          : "Confirmar pagamento de teste →"
-          }}
-        </button>
-        }
-        @if (error()) {
-        <p class="error" role="alert">{{ error() }}</p>
+        <div class="hint">
+          Nenhum botão desta tela marca o pedido como pago.
+        </div>
         }
       </section>
       <aside class="checkout-card summary">
@@ -80,8 +72,8 @@
         </div>
         <div class="sandbox">TESTE · SEM COBRANÇA REAL</div>
         <p>
-          O parceiro receberá comissão simulada somente após a confirmação do
-          pagamento nesta página.
+          A comissão só entra depois que o pagamento estiver confirmado. Esta
+          página não faz essa confirmação.
         </p>
       </aside>
     </div>
