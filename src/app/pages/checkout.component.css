@@ -152,6 +152,39 @@
   opacity: 0.5;
   cursor: wait;
 }
+.pix {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+.pix img {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  background: white;
+}
+.pix label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #66707d;
+}
+.pix textarea {
+  width: 100%;
+  border: 1px solid #e6e8eb;
+  border-radius: 8px;
+  padding: 12px;
+  font: 13px/1.5 ui-monospace, monospace;
+  resize: vertical;
+}
+.secondary {
+  border: 1px solid #d7dbe0;
+  background: white;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
 .success {
   background: #e7f6ec;
   color: #166c39;

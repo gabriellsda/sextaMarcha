@@ -46,8 +46,8 @@
         <div class="separator"></div>
         <div class="section-kicker">03 / PAGAMENTO</div>
         <p>
-          O clique nesta página não confirma o pagamento. O pedido só fica
-          pago quando o webhook autenticado receber charge.paid.
+          O PIX é gerado aqui, mas o clique não marca o pedido como pago. Isso
+          só acontece quando o webhook autenticado recebe charge.paid.
         </p>
         @if (order.paymentStatus === "paid") {
         <div class="success">
@@ -55,9 +55,25 @@
           venda no portal.
         </div>
         } @else {
-        <div class="hint">
-          Nenhum botão desta tela marca o pedido como pago.
+        @if (order.pixQrCode) {
+        <div class="pix">
+          @if (order.pixQrCodeUrl) {
+          <img [src]="order.pixQrCodeUrl" alt="QR Code do PIX" width="220" height="220" />
+          }
+          <label for="pix-code">PIX copia e cola</label>
+          <textarea id="pix-code" readonly rows="4">{{ order.pixQrCode }}</textarea>
+          <button type="button" class="secondary" (click)="copyPix()">
+            {{ copied() ? "Código copiado" : "Copiar código" }}
+          </button>
         </div>
+        } @else {
+        <button type="button" class="pay" [disabled]="processing()" (click)="generatePix()">
+          {{ processing() ? "Gerando PIX..." : "Gerar PIX de teste" }}
+        </button>
+        }
+        }
+        @if (error()) {
+        <p class="error" role="alert">{{ error() }}</p>
         }
       </section>
       <aside class="checkout-card summary">
@@ -72,8 +88,7 @@
         </div>
         <div class="sandbox">TESTE · SEM COBRANÇA REAL</div>
         <p>
-          A comissão só entra depois que o pagamento estiver confirmado. Esta
-          página não faz essa confirmação.
+          A comissão só entra depois do webhook. Gerar o PIX não quita o pedido.
         </p>
       </aside>
     </div>

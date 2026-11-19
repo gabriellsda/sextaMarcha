@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renewCheckoutLink = exports.confirmSandboxCheckout = exports.getPublicCheckout = exports.listCourseOffers = exports.simulateCoursePayment = exports.listCourseOrders = exports.createTestCourseOrder = exports.setPartnerStatus = exports.registerPartner = exports.submitLead = void 0;
+exports.pagarmeWebhook = exports.createPixCharge = exports.renewCheckoutLink = exports.confirmSandboxCheckout = exports.getPublicCheckout = exports.listCourseOffers = exports.simulateCoursePayment = exports.listCourseOrders = exports.createTestCourseOrder = exports.setPartnerStatus = exports.registerPartner = exports.submitLead = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const app_1 = require("firebase-admin/app");
 const firestore_1 = require("firebase-admin/firestore");
@@ -183,3 +183,7 @@ Object.defineProperty(exports, "getPublicCheckout", { enumerable: true, get: fun
 Object.defineProperty(exports, "confirmSandboxCheckout", { enumerable: true, get: function () { return checkout_1.confirmSandboxCheckout; } });
 var course_orders_2 = require("./course-orders");
 Object.defineProperty(exports, "renewCheckoutLink", { enumerable: true, get: function () { return course_orders_2.renewCheckoutLink; } });
+var pix_checkout_1 = require("./pix-checkout");
+Object.defineProperty(exports, "createPixCharge", { enumerable: true, get: function () { return pix_checkout_1.createPixCharge; } });
+var pagarme_webhook_1 = require("./pagarme-webhook");
+Object.defineProperty(exports, "pagarmeWebhook", { enumerable: true, get: function () { return pagarme_webhook_1.pagarmeWebhook; } });
