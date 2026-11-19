@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/matricula.test.mjs",
     "serve": "npm run build && firebase emulators:start --only functions,firestore",
     "deploy": "npm run build && firebase deploy --only functions"
   },
