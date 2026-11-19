@@ -184,3 +184,5 @@ export { simulateCoursePayment } from "./payment-simulator";
 export { listCourseOffers } from "./course-catalog";
 export {getPublicCheckout, confirmSandboxCheckout} from "./checkout";
 export {renewCheckoutLink} from "./course-orders";
+export {createPixCharge} from "./pix-checkout";
+export {pagarmeWebhook} from "./pagarme-webhook";

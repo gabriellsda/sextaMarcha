@@ -1,6 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getFirestore } from "firebase-admin/firestore";
 import { createHash } from "node:crypto";
+import { publicQrUrl } from "./payments/pagarme-pix";
 const db = getFirestore();
 const options = {
   region: "southamerica-east1" as const,
@@ -12,7 +13,7 @@ const hashToken = (token: unknown) => {
     throw new HttpsError("invalid-argument", "Link inválido.");
   return createHash("sha256").update(token).digest("hex");
 };
-async function resolve(token: unknown) {
+export async function resolveCheckoutToken(token: unknown) {
   const ref = db.collection("checkoutTokens").doc(hashToken(token));
   const snap = await ref.get();
   if (!snap.exists || snap.data()?.["expiresAt"]?.toMillis?.() < Date.now())
@@ -24,7 +25,7 @@ async function resolve(token: unknown) {
 }
 /** Exibe somente dados mínimos; o token é uma credencial bearer. */
 export const getPublicCheckout = onCall(options, async (request) => {
-  const orderId = await resolve(request.data?.token);
+  const orderId = await resolveCheckoutToken(request.data?.token);
   const [orderSnap, studentSnap] = await Promise.all([
     db.collection("orders").doc(orderId).get(),
     db.collection("students").doc(orderId).get(),
@@ -42,6 +43,10 @@ export const getPublicCheckout = onCall(options, async (request) => {
     studentName: student["fullName"],
     studentEmail: student["email"],
     studentPhoneLast4: String(student["phone"] ?? "").slice(-4),
+    pixQrCode: typeof order["pixQrCode"] === "string" ? order["pixQrCode"] : null,
+    pixQrCodeUrl: publicQrUrl(order["pixQrCodeUrl"]),
+    pixExpiresAt:
+      typeof order["pixExpiresAt"] === "string" ? order["pixExpiresAt"] : null,
   };
 });
 /**

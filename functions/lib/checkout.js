@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.confirmSandboxCheckout = exports.getPublicCheckout = void 0;
+exports.resolveCheckoutToken = resolveCheckoutToken;
 const https_1 = require("firebase-functions/v2/https");
 const firestore_1 = require("firebase-admin/firestore");
 const node_crypto_1 = require("node:crypto");
+const pagarme_pix_1 = require("./payments/pagarme-pix");
 const db = (0, firestore_1.getFirestore)();
 const options = {
     region: "southamerica-east1",
@@ -15,7 +17,7 @@ const hashToken = (token) => {
         throw new https_1.HttpsError("invalid-argument", "Link inválido.");
     return (0, node_crypto_1.createHash)("sha256").update(token).digest("hex");
 };
-async function resolve(token) {
+async function resolveCheckoutToken(token) {
     const ref = db.collection("checkoutTokens").doc(hashToken(token));
     const snap = await ref.get();
     if (!snap.exists || snap.data()?.["expiresAt"]?.toMillis?.() < Date.now())
@@ -27,7 +29,7 @@ async function resolve(token) {
 }
 /** Exibe somente dados mínimos; o token é uma credencial bearer. */
 exports.getPublicCheckout = (0, https_1.onCall)(options, async (request) => {
-    const orderId = await resolve(request.data?.token);
+    const orderId = await resolveCheckoutToken(request.data?.token);
     const [orderSnap, studentSnap] = await Promise.all([
         db.collection("orders").doc(orderId).get(),
         db.collection("students").doc(orderId).get(),
@@ -44,6 +46,9 @@ exports.getPublicCheckout = (0, https_1.onCall)(options, async (request) => {
         studentName: student["fullName"],
         studentEmail: student["email"],
         studentPhoneLast4: String(student["phone"] ?? "").slice(-4),
+        pixQrCode: typeof order["pixQrCode"] === "string" ? order["pixQrCode"] : null,
+        pixQrCodeUrl: (0, pagarme_pix_1.publicQrUrl)(order["pixQrCodeUrl"]),
+        pixExpiresAt: typeof order["pixExpiresAt"] === "string" ? order["pixExpiresAt"] : null,
     };
 });
 /**

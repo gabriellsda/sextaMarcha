@@ -1,11 +1,24 @@
-/** Contrato de integração futura. Não processa pagamentos nesta versão. */
+import {
+  createPagarmePixCharge,
+  getPagarmeCharge,
+  PixChargeCreated,
+  PixChargeRequest,
+} from "./pagarme-pix";
+
+/** Contrato de cobrança. Cartão, boleto e link hospedado continuam desligados. */
 export type PaymentEnvironment = "sandbox" | "production";
-export type PaymentState = "pending" | "paid" | "failed" | "refunded" | "canceled";
+export type PaymentState =
+  | "pending"
+  | "paid"
+  | "failed"
+  | "refunded"
+  | "canceled";
+
 export interface PaymentCheckoutRequest {
   orderId: string;
   amountCents: number;
   currency: "BRL";
-  customerReference: string; // Referência interna; dados sensíveis permanecem no servidor
+  customerReference: string;
   idempotencyKey: string;
 }
 export interface PaymentCheckoutResult {
@@ -16,16 +29,38 @@ export interface PaymentCheckoutResult {
 }
 export interface PaymentProvider {
   readonly name: string;
-  createCheckout(request: PaymentCheckoutRequest): Promise<PaymentCheckoutResult>;
+  createCheckout(
+    request: PaymentCheckoutRequest,
+  ): Promise<PaymentCheckoutResult>;
   getPayment(providerOrderId: string): Promise<PaymentState>;
 }
-/** Futuro adaptador Pagar.me: exige contrato comercial, credenciais, webhook e testes. */
+
 export class PagarmePaymentProvider implements PaymentProvider {
   readonly name = "pagarme";
-  async createCheckout(_request: PaymentCheckoutRequest): Promise<PaymentCheckoutResult> {
-    throw new Error("Pagar.me ainda não integrado: checkout real desabilitado.");
+  constructor(private readonly apiKey: string) {}
+
+  async createCheckout(
+    _request: PaymentCheckoutRequest,
+  ): Promise<PaymentCheckoutResult> {
+    throw new Error(
+      "Checkout de cartão, boleto e link hospedado não está habilitado. Use o PIX.",
+    );
   }
-  async getPayment(_providerOrderId: string): Promise<PaymentState> {
-    throw new Error("Pagar.me ainda não integrado: conciliação desabilitada.");
+
+  async createPixCharge(request: PixChargeRequest): Promise<PixChargeCreated> {
+    return createPagarmePixCharge(this.apiKey, request);
+  }
+
+  async getPayment(providerChargeId: string): Promise<PaymentState> {
+    const charge = await getPagarmeCharge(this.apiKey, providerChargeId);
+    if (
+      charge.status === "paid" ||
+      charge.status === "pending" ||
+      charge.status === "failed" ||
+      charge.status === "canceled"
+    ) {
+      return charge.status;
+    }
+    return "pending";
   }
 }

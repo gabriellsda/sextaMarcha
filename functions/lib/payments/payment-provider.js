@@ -1,14 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PagarmePaymentProvider = void 0;
-/** Futuro adaptador Pagar.me: exige contrato comercial, credenciais, webhook e testes. */
+const pagarme_pix_1 = require("./pagarme-pix");
 class PagarmePaymentProvider {
+    apiKey;
     name = "pagarme";
-    async createCheckout(_request) {
-        throw new Error("Pagar.me ainda não integrado: checkout real desabilitado.");
+    constructor(apiKey) {
+        this.apiKey = apiKey;
     }
-    async getPayment(_providerOrderId) {
-        throw new Error("Pagar.me ainda não integrado: conciliação desabilitada.");
+    async createCheckout(_request) {
+        throw new Error("Checkout de cartão, boleto e link hospedado não está habilitado. Use o PIX.");
+    }
+    async createPixCharge(request) {
+        return (0, pagarme_pix_1.createPagarmePixCharge)(this.apiKey, request);
+    }
+    async getPayment(providerChargeId) {
+        const charge = await (0, pagarme_pix_1.getPagarmeCharge)(this.apiKey, providerChargeId);
+        if (charge.status === "paid" ||
+            charge.status === "pending" ||
+            charge.status === "failed" ||
+            charge.status === "canceled") {
+            return charge.status;
+        }
+        return "pending";
     }
 }
 exports.PagarmePaymentProvider = PagarmePaymentProvider;
